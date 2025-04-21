@@ -1,47 +1,41 @@
 import asyncio
 from scrapers.suumo_scraper import SuumoScraper
-from models.property import Property
-from typing import List
+from typing import List, Dict
 import json
 from datetime import datetime
+import os
 
 async def main():
-    # Initialize scrapers
+    # Initialize scraper
     suumo_scraper = SuumoScraper()
     
-    # Get properties from all sources
-    properties: List[Property] = []
+    # URL to scrape
+    url = "https://suumo.jp/jj/chintai/ichiran/FR301FC001/?ar=030&bs=040&pc=30&smk=&po1=25&po2=99&sd=1&shkr1=03&shkr2=03&shkr3=03&shkr4=03&rn=0005&ra=013&cb=0.0&ct=9999999&ts=1&et=9999999&mb=65&mt=9999999&cn=9999999&fw2="
     
     try:
-        suumo_properties = await suumo_scraper.search_properties()
-        properties.extend(suumo_properties)
+        # Get properties from SUUMO
+        properties = await suumo_scraper.scrape_properties(url)
+        
+        # Create output directory if it doesn't exist
+        output_dir = "output"
+        os.makedirs(output_dir, exist_ok=True)
+        
+        # Save to markdown
+        markdown_file = os.path.join(output_dir, "suumo_properties.md")
+        suumo_scraper.save_to_markdown(properties, markdown_file)
+        
+        # Also save to JSON for backup
+        json_file = os.path.join(output_dir, "suumo_properties.json")
+        with open(json_file, 'w', encoding='utf-8') as f:
+            json.dump(properties, f, ensure_ascii=False, indent=2)
+        
+        print(f"Successfully scraped {len(properties)} properties")
+        print(f"Results saved to:")
+        print(f"- Markdown: {markdown_file}")
+        print(f"- JSON: {json_file}")
+        
     except Exception as e:
-        print(f"Error scraping SUUMO: {str(e)}")
-
-    # Sort properties by price
-    properties.sort(key=lambda x: x.price)
-
-    # Save results to a JSON file
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"results_{timestamp}.json"
-    
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump([p.dict() for p in properties], f, ensure_ascii=False, indent=2)
-
-    print(f"Found {len(properties)} properties matching the criteria")
-    print(f"Results saved to {filename}")
-
-    # Print summary of results
-    for prop in properties:
-        print(f"\nTitle: {prop.title}")
-        print(f"Price: ¥{prop.price:,.0f}/month")
-        print(f"Floor Area: {prop.floor_area}m²")
-        print(f"Floor: {prop.floor}F")
-        print(f"Station: {prop.nearest_station} ({prop.station_distance}min)")
-        print(f"Address: {prop.address}")
-        if prop.direction:
-            print(f"Direction: {prop.direction}")
-        print(f"URL: {prop.url}")
+        print(f"Error during scraping: {str(e)}")
 
 if __name__ == "__main__":
     asyncio.run(main()) 
