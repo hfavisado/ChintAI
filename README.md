@@ -1,4 +1,4 @@
-# Real Estate Scraper
+# Real Estate Scraper ChintAI
 
 A web scraper for real estate properties in Tokyo's 23 wards, supporting multiple websites including SUUMO and AtHome.
 
@@ -20,8 +20,8 @@ A web scraper for real estate properties in Tokyo's 23 wards, supporting multipl
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/real-estate-scraper.git
-cd real-estate-scraper
+git clone https://github.com/yourusername/ChintAI.git
+cd ChintAI
 ```
 
 2. Create a virtual environment and activate it:
@@ -59,7 +59,7 @@ To add support for a new website:
 ## Project Structure
 
 ```
-real-estate-scraper/
+ChintAI/
 ├── src/
 │   ├── scrapers/
 │   │   ├── base_scraper.py
