@@ -10,7 +10,7 @@ class SuumoScraper:
     def __init__(self):
         self.base_url = "https://suumo.jp"
         self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
         }
 
     async def fetch_page(self, session: aiohttp.ClientSession, url: str) -> str:
@@ -31,7 +31,9 @@ class SuumoScraper:
         page_title = "SUUMO Rental Properties"  # Default title
         header = soup.find("div", class_="ui-section-header")
         if header:
-            page_title = header.text.strip()
+            h1_tag = header.find("h1")
+            if h1_tag:
+                page_title = h1_tag.text.strip()
         
         # Find all cassette items (each represents a building)
         cassette_items = soup.find_all("div", class_="cassetteitem")
