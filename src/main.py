@@ -16,7 +16,7 @@ async def main():
     try:
         async with aiohttp.ClientSession() as session:
             html = await suumo_scraper.fetch_page(session, url)
-            titles = suumo_scraper.parse_properties(html)
+            properties, page_title = suumo_scraper.parse_properties(html)
         
         # Create output directory if it doesn't exist
         output_dir = "output"
@@ -24,14 +24,17 @@ async def main():
         
         # Save to markdown
         markdown_file = os.path.join(output_dir, "suumo_properties.md")
-        suumo_scraper.save_to_markdown(titles, markdown_file)
+        suumo_scraper.save_to_markdown(properties, page_title, markdown_file)
         
         # Save to JSON
         json_file = os.path.join(output_dir, "suumo_properties.json")
-        with open(json_file, 'w', encoding='utf-8') as f:
-            json.dump(titles, f, ensure_ascii=False, indent=2)
+        suumo_scraper.save_to_json(properties, page_title, json_file)
         
-        print(f"Found {len(titles)} properties and saved to {markdown_file} and {json_file}")
+        # Save to HTML
+        html_file = os.path.join(output_dir, "suumo_properties.html")
+        suumo_scraper.save_to_html(properties, page_title, html_file)
+        
+        print(f"Found {len(properties)} properties and saved to {markdown_file}, {json_file}, and {html_file}")
         
     except Exception as e:
         print(f"Error during scraping: {str(e)}")
