@@ -40,7 +40,15 @@ class SuumoScraper:
             for col in detail_cols:
                 # Extract just the number from the class name
                 col_num = col["class"][0].split("-")[-1].replace("col", "")
-                details[f"detail{col_num}"] = col.text.strip()
+                text = col.text.strip()
+                
+                # Split multi-line text and create separate entries
+                lines = text.split('\n')
+                if len(lines) > 1:
+                    for i, line in enumerate(lines, 1):
+                        details[f"detail{col_num}-{i}"] = line.strip()
+                else:
+                    details[f"detail{col_num}"] = text
             
             properties.append({
                 "title": title,
